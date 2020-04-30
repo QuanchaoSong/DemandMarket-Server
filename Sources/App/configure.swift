@@ -15,6 +15,9 @@ public func configure(_ app: Application) throws {
     ), as: .psql)
 
     app.migrations.add(CreateTodo())
+    
+    let foo = Environment.get("FOO")
+    print(foo!)
 
     // register routes
     try routes(app)
