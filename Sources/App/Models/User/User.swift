@@ -9,43 +9,46 @@ import Fluent
 import Vapor
 
 final class User: Model, Content {
-    static let schema = "User"
+    static let schema = "users"
     
     @ID(key: .id)
     var id: UUID?
 
     @Field(key: "wx_open_id")
-    var wx_open_id: String
+    var wx_open_id: String?
     
     @Field(key: "gender")
-    var gender: Int8
+    var gender: UInt8?
     
     @Field(key: "nickname")
-    var nickname: String
+    var nickname: String?
     
     @Field(key: "username")
-    var username: String
+    var username: String?
     
     @Field(key: "phone_number")
-    var phone_number: String
+    var phone_number: String?
     
     @Field(key: "token")
-    var token: String
+    var token: String?
     
     @Field(key: "birth_date")
-    var birth_date: Int64
+    var birth_date: UInt64?
     
     @Field(key: "country")
-    var country: String
+    var country: String?
     
     @Field(key: "province")
-    var province: String
+    var province: String?
     
     @Field(key: "city")
-    var city: String
+    var city: String?
     
     @Field(key: "language")
-    var language: String
+    var language: String?
+    
+    @Field(key: "firm_id")
+    var firm_id: String?
     
     @Field(key: "create_time")
     var create_time: Date?

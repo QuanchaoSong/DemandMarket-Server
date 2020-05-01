@@ -16,10 +16,10 @@ public func configure(_ app: Application) throws {
     ), as: .psql)
 
     app.migrations.add(CreateTodo())
-//    app.migrations.add(
+    app.migrations.add(CreateUser())
     
     let foo = Environment.get("FOO")
-    print(foo!)
+    print(foo ?? "H")
 
     // register routes
     try routes(app)
