@@ -19,13 +19,16 @@ final class User: Model, Content {
     var wx_open_id: String?
     
     @Field(key: "gender")
-    var gender: UInt8?
+    var gender: Int?
     
     @Field(key: "nickname")
     var nickname: String?
     
     @Field(key: "username")
     var username: String?
+    
+    @Field(key: "portrait_url")
+    var portrait_url: String?
     
     @Field(key: "phone_number")
     var phone_number: String?
@@ -48,17 +51,38 @@ final class User: Model, Content {
     @Field(key: "language")
     var language: String?
     
-    @Field(key: "firm_id")
-    var firm_id: String?
+    @Field(key: "company_id")
+    var company_id: String?
     
     @Field(key: "create_time")
     var create_time: Date?
     
+    init() {
+        self.portrait_url = ""
+        self.nickname = ""
+        self.username = ""
+        self.gender = 0
+        self.phone_number = ""
+        self.birth_date = 0
+        self.country = ""
+        self.province = ""
+        self.city = ""
+        self.language = ""
+        self.company_id = ""
+        self.create_time = Date()
+    }
     
-//    init(from loginRequest: LoginRequest) {
-//        self.wx_open_id = loginRequest.wx_open_id
-//        
-//    }
+    func importData(from params: UserInfoRequest) -> Void {
+        self.portrait_url = params.avatarUrl
+        self.nickname = params.nickName
+        self.username = ""
+        self.gender = params.gender
+        self.phone_number = params.phoneNumber
+        self.country = params.country
+        self.province = params.province
+        self.city = params.city
+        self.language = params.language
+    }
 }
 
 extension User {
@@ -67,7 +91,14 @@ extension User {
     }
     
     struct Public: Content {
-        let nickname: String
+        var avatarUrl: String? = ""
+        var nickName: String? = ""
+        var gender: Int? = 0
+        var phoneNumber: String? = ""
+        var country: String? = ""
+        var province: String? = ""
+        var city: String? = ""
+        var is_company: Bool? = false
     }
 }
 
@@ -77,14 +108,14 @@ struct LoginRequest : Content {
 
 struct UserInfoRequest : Content {
     let wx_open_id: String
-    let avatarUrl: String
-    let nickName: String
-    let gender: UInt8
-    let phone_number: String
-    let country: String
-    let province: String
-    let city: String
-    let language: String
+    let avatarUrl: String?
+    let nickName: String?
+    let gender: Int?
+    let phoneNumber: String?
+    let country: String?
+    let province: String?
+    let city: String?
+    let language: String?
 }
 
 
@@ -103,11 +134,6 @@ struct UserToken : Content, Authenticatable, JWTPayload {
     init(id: String?) {
         self.id = id;
     }
-//    
-//    init(id: Int?, user_id: String?) {
-//        self.id = id;
-//        self.user_id = user_id;
-//    }
         
     func verify(using signer: JWTSigner) throws {
         

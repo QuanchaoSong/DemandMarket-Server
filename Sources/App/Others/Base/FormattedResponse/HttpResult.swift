@@ -28,7 +28,7 @@ struct HttpResult<T : Content> : Content {
     init(successWithMessage message: String) {
         self.code = 1
         self.message = message
-        self.data = ("" as! T)
+        self.data = nil
     }
     
     init(successWith data: T? = nil) {
@@ -40,7 +40,7 @@ struct HttpResult<T : Content> : Content {
     init(errorCode: Int, message: String) {
         self.code = errorCode
         self.message = message
-        self.data = ("" as! T)
+        self.data = nil
     }
     
     static func invalidToken() -> HttpResult<String> {
