@@ -52,20 +52,36 @@ final class User: Model, Content {
     
     @Field(key: "create_time")
     var create_time: Date?
+    
+    
+//    init(from loginRequest: LoginRequest) {
+//        self.wx_open_id = loginRequest.wx_open_id
+//        
+//    }
 }
 
 extension User {
-    struct Public: Content {
+    struct LoginResult: Content {
         let token: String
+    }
+    
+    struct Public: Content {
+        let nickname: String
     }
 }
 
 struct LoginRequest : Content {
+    let code: String
+}
+
+struct UserInfoRequest : Content {
     let wx_open_id: String
-    let nickname: String
-    let gender: Int8
-//    var phone_number: String
-//    var country: String
-//    var province: String
-//    var city: String
+    let avatarUrl: String
+    let nickName: String
+    let gender: UInt8
+    let phone_number: String
+    let country: String
+    let province: String
+    let city: String
+    let language: String
 }
