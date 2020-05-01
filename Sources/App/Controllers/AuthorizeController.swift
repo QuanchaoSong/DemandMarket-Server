@@ -9,13 +9,14 @@ import Fluent
 import Vapor
 
 struct AuthorizeController {
-    func login(req: Request) throws -> EventLoopFuture<User.LoginResult> {
+    func login(req: Request) throws -> EventLoopFuture<HttpResult<User.LoginResult>> {
         let loginParams = try req.content.decode(LoginRequest.self)
         return User.query(on: req.db).filter(\.$wx_open_id == loginParams.code).first().flatMap { u in
             let user: User = (u ?? User())
             user.wx_open_id = loginParams.code
             return user.save(on: req.db).map {
-                User.LoginResult(token: "hahadlfjasdfldsf")
+                let rst = User.LoginResult(token: "hahadlfjasdfldsf")
+                return HttpResult<User.LoginResult>(successWith: rst)
             }
         }
     }
