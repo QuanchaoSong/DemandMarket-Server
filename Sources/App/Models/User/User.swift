@@ -7,6 +7,7 @@
 
 import Fluent
 import Vapor
+import JWT
 
 final class User: Model, Content {
     static let schema = "users"
@@ -84,4 +85,31 @@ struct UserInfoRequest : Content {
     let province: String
     let city: String
     let language: String
+}
+
+
+
+struct UserToken : Content, Authenticatable, JWTPayload {
+    var id: String! = ""
+    var create_time : Int! = Int(Date().timeIntervalSince1970);
+    var expired_duration: Int! = (5 * 24 * 60 * 60); // in second
+    
+    init(id: String?, create_time: Int?, expired_duration: Int?) {
+        self.id = id;
+        self.create_time = create_time;
+        self.expired_duration = expired_duration;
+    }
+    
+    init(id: String?) {
+        self.id = id;
+    }
+//    
+//    init(id: Int?, user_id: String?) {
+//        self.id = id;
+//        self.user_id = user_id;
+//    }
+        
+    func verify(using signer: JWTSigner) throws {
+        
+    }
 }
