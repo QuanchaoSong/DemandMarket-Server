@@ -9,13 +9,6 @@ import Fluent
 import Vapor
 import JWT
 
-//struct Dss : ContiguousBytes {
-//    func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
-//
-//    }
-//
-//    let secret: String
-//}
 
 struct AuthorizeController {
     func login(req: Request) throws -> EventLoopFuture<HttpResult<User.LoginResult>> {
@@ -30,9 +23,9 @@ struct AuthorizeController {
             
             return user.save(on: req.db).map {
 //                let token = try? req.jwt.sign(UserToken(id: user.id!.uuidString))
-                let token = try? JWTSigner.es256(key: .generate()).sign(UserToken(id: user.id!.uuidString))
+//                let token = try? JWTSigner.es256(key: .generate()).sign(UserToken(id: user.id!.uuidString))
 //                let tmpData:
-//                let token = try? JWTSigner.hs256(key: .init(data: "hldls_de8dc_8e2".data(using: .utf8))).sign(UserToken(id: user.id!.uuidString))
+                let token = try? JWTSigner.hs256(key: .init(data: JWT_SIGN_SECRET.data(using: .utf8)!)).sign(UserToken(id: user.id!.uuidString))
                 let rst = User.LoginResult(token: token ?? "")
                 return HttpResult<User.LoginResult>(successWith: rst)
             }
