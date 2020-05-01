@@ -15,7 +15,7 @@ func routes(_ app: Application) throws {
     app.post("todos", use: todoController.create)
     app.delete("todos", ":todoID", use: todoController.delete)
     
-    
+
     let authController = AuthorizeController()
-    app.post("login", use: authController.login)
+    app.post(GlobalTool.routerName(group: "authorize", name: "login"), use: authController.login)
 }

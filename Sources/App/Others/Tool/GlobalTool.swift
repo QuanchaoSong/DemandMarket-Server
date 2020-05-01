@@ -1,4 +1,3 @@
-
 //
 //  File.swift
 //  
@@ -7,15 +6,15 @@
 //
 
 import Foundation
+import Vapor
 
-class GlobalTool : NSObject {
-    static func routerName(version: String, group: String, name: String) -> String {
+class GlobalTool: NSObject {
+    static func routerName(version: String, group: String, name: String) -> [PathComponent] {
         let result = "\(version)/\(group)/\(name)"
-        print("result: \(result)")
-        return result
+        return result.pathComponents
     }
     
-    static func routerName(group: String, name: String) -> String {
+    static func routerName(group: String, name: String) -> [PathComponent] {
         return self.routerName(version: VERSION, group: group, name: name)
     }
 }
