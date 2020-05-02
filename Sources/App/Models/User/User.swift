@@ -77,7 +77,7 @@ final class User: Model, Content {
         self.nickname = params.nickName
         self.username = ""
         self.gender = params.gender
-        self.phone_number = params.phoneNumber
+        self.phone_number = params.phoneNumber ?? ""
         self.country = params.country
         self.province = params.province
         self.city = params.city
