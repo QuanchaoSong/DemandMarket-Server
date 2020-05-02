@@ -103,7 +103,7 @@ extension User {
 }
 
 struct LoginRequest : Content {
-    let code: String
+    var code: String
 }
 
 struct UserInfoRequest : Content {
