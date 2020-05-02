@@ -19,4 +19,8 @@ func routes(_ app: Application) throws {
     let authController = AuthorizeController()
     app.post(GlobalTool.routerName(group: "authorize", name: "login"), use: authController.login)
     app.post(GlobalTool.routerName(group: "authorize", name: "update_userinfo"), use: authController.update_userinfo)
+    
+    
+    let demandController = DemandController()
+    app.post(GlobalTool.routerName(group: "demand", name: "get_demand_type_list"), use: demandController.get_demand_type_list)
 }
