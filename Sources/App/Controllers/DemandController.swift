@@ -14,14 +14,9 @@ struct DemandController {
 //    }
     
     
-    func get_demand_type_list(req: Request) throws -> EventLoopFuture<HttpResult<[TypeItem]>> {
-        var result = [TypeItem]()
-        let item1 = TypeItem(type_id: 0, title: "自定义")
-        let item2 = TypeItem(type_id: 1, title: "产品设计")
-        result.append(item1)
-        result.append(item2)
+    func get_demand_type_list(req: Request) throws -> EventLoopFuture<HttpResult<[[String : String]]>> {
         return req.eventLoop.future().map { _ in
-            HttpResult<[TypeItem]>(successWith: result)
+            HttpResult<[[String : String]]>(successWith: DEMAND_TYPE_LIST)
         }
     }
 }
