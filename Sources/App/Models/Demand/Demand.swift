@@ -59,6 +59,12 @@ final class Demand: Model, Content {
     }
 }
 
+extension Demand {
+    struct ListItem : Content {
+        let title: String?
+    }
+}
+
 
 struct DemandCreationRequest : Content {
     let title: String?
@@ -67,6 +73,8 @@ struct DemandCreationRequest : Content {
     let speciality: String?
     let type: Int?
 }
+
+
 
 
 struct TypeItem : Content {

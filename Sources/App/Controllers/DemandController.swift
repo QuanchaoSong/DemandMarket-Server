@@ -26,6 +26,18 @@ struct DemandController {
         }
     }
     
+    func get_demand_list(req: Request) throws -> EventLoopFuture<HttpResult<[Demand.ListItem]>> {
+        let params = try req.content.decode(PageIndexRequest.self)
+        return Demand.query(on: req.db).all().map { demands in
+            var result = [Demand.ListItem]()
+            for demand in demands {
+                let item =  Demand.ListItem(title: demand.title)
+                result.append(item)
+            }
+            return HttpResult<[Demand.ListItem]>(successWith: result)
+        }
+    }
+    
     
     func get_demand_type_list(req: Request) throws -> EventLoopFuture<HttpResult<[[String : String]]>> {
         return req.eventLoop.future().map { _ in

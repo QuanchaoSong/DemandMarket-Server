@@ -7,6 +7,7 @@
 
 import Foundation
 import Vapor
+import JWT
 
 class GlobalTool: NSObject {
     static func routerName(version: String, group: String, name: String) -> [PathComponent] {
