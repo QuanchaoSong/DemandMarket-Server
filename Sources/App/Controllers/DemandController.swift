@@ -10,16 +10,12 @@ import Vapor
 
 struct DemandController {
     func create_demand(req: Request) throws -> EventLoopFuture<HttpResult<Demand>> {
-//        let uuid = UUID(uuidString: "634d4cbf-b451-4eff-a8dd-c9b9becb3c23")
-        let uuid = UUID()
-        print("uuid: \(uuid)")
+        let uuid = UUID(uuidString: "634d4cbf-b451-4eff-a8dd-c9b9becb3c23")
         let params = try req.content.decode(DemandCreationRequest.self)
-
-        return User.find(uuid, on: req.db).flatMap { user in
+        return User.find(uuid!, on: req.db).flatMap { user in
             let dmd = Demand()
             dmd.importData(from: params)
             dmd.demander_id = user!.id!.uuidString
-//            dmd.demander_id = "3"
             dmd.wx_open_id = user!.wx_open_id
             dmd.demander_name = user!.nickname
             return dmd.create(on: req.db).flatMap { d in

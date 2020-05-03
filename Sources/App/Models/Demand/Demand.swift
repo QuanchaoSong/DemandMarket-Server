@@ -12,7 +12,7 @@ import Vapor
 final class Demand: Model, Content {
     static let schema = "demands"
     
-    @ID(key: .id)
+    @ID(custom: "id", generatedBy: .database)
     var id: Int?
     
     @Field(key: "wx_open_id")
@@ -34,10 +34,10 @@ final class Demand: Model, Content {
     var speciality: String?
     
     @Field(key: "status")
-    var status: Int8?
+    var status: Int?
     
     @Field(key: "type")
-    var type: Int8?
+    var type: Int?
     
     @Field(key: "demander_id")
     var demander_id: String?
@@ -46,8 +46,12 @@ final class Demand: Model, Content {
     var create_time: Date?
     
     
+    init() {
+    }
+    
+    
     func importData(from params: DemandCreationRequest) -> Void {
-        self.title = title ?? ""
+        self.title = params.title ?? ""
         self.desc = params.desc ?? ""
         self.expiring_time = params.expiring_time ?? Int64(Date().timeIntervalSince1970)
         self.speciality = params.speciality ?? ""
@@ -58,11 +62,10 @@ final class Demand: Model, Content {
 
 struct DemandCreationRequest : Content {
     let title: String?
-//    let demander_name: String
     let desc: String?
     let expiring_time: Int64?
     let speciality: String?
-    let type: Int8?
+    let type: Int?
 }
 
 
