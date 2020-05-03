@@ -27,14 +27,18 @@ struct DemandController {
     }
     
     func get_demand_list(req: Request) throws -> EventLoopFuture<HttpResult<[Demand.ListItem]>> {
-        let params = try req.content.decode(PageIndexRequest.self)
+//        let params = try req.content.decode(PageIndexRequest.self)
         return Demand.query(on: req.db).all().map { demands in
-            var result = [Demand.ListItem]()
-            for demand in demands {
-                let item =  Demand.ListItem(title: demand.title)
-                result.append(item)
+            let result = demands.compactMap {
+                Demand.ListItem(title: $0.title)
             }
             return HttpResult<[Demand.ListItem]>(successWith: result)
+//            var result = [Demand.ListItem]()
+//            for demand in demands {
+//                let item =  Demand.ListItem(title: demand.title)
+//                result.append(item)
+//            }
+//            return HttpResult<[Demand.ListItem]>(successWith: result)
         }
     }
     
