@@ -62,6 +62,12 @@ final class Demand: Model, Content {
 extension Demand {
     struct ListItem : Content {
         let title: String?
+        let demander_name: String?
+        let type_id: Int?
+        let type_name: String?
+        let status: Int?
+        let expiring_time: Int64?
+        let view_count: Int? = 0
     }
 }
 

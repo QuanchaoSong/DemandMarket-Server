@@ -16,4 +16,12 @@ struct PageIndexRequest : Content {
         self.pageIndex = 10
         self.pageSize = 20
     }
+    
+    lazy var rangeStart: Int! = {
+        return (self.pageIndex ?? 0) * (self.pageSize ?? 20);
+    }()
+    
+    lazy var rangeEnd: Int! = {
+        return ((self.pageIndex ?? 0) + 1) * (self.pageSize ?? 20);
+    }()
 }

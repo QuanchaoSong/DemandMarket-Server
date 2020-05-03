@@ -7,6 +7,7 @@
 
 import Fluent
 import Vapor
+import PostgresKit
 
 struct DemandController {
     func create_demand(req: Request) throws -> EventLoopFuture<HttpResult<Demand>> {
@@ -27,18 +28,19 @@ struct DemandController {
     }
     
     func get_demand_list(req: Request) throws -> EventLoopFuture<HttpResult<[Demand.ListItem]>> {
-//        let params = try req.content.decode(PageIndexRequest.self)
-        return Demand.query(on: req.db).all().map { demands in
-            let result = demands.compactMap {
-                Demand.ListItem(title: $0.title)
+        var params = try req.content.decode(PageIndexRequest.self)
+        let sqlString = String(format: "SELECT * FROM public.demands LIMIT %d OFFSET %d;", (params.rangeEnd - params.rangeStart), params.rangeStart)
+        let sql = (req.db as! PostgresDatabase).sql()
+        return sql.raw(SQLQueryString(stringLiteral: sqlString)).all().map { rows in
+            let result = rows.compactMap { row -> Demand.ListItem in
+                let sqlRow = (row as SQLRow)
+                
+                let demand = try! sqlRow.decode(model: Demand.self)
+                
+                return Demand.ListItem(title: demand.title, demander_name: demand.demander_name, type_id: demand.type, type_name: getTypeNameBy(typeId: demand.type!), status: demand.status, expiring_time: demand.expiring_time)
             }
+            
             return HttpResult<[Demand.ListItem]>(successWith: result)
-//            var result = [Demand.ListItem]()
-//            for demand in demands {
-//                let item =  Demand.ListItem(title: demand.title)
-//                result.append(item)
-//            }
-//            return HttpResult<[Demand.ListItem]>(successWith: result)
         }
     }
     
