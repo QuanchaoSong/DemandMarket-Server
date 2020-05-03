@@ -43,6 +43,12 @@ struct HttpResult<T : Content> : Content {
         self.data = nil
     }
     
+    init(errorWithMessage msg: String?) {
+        self.code = 0
+        self.message = msg ?? ""
+        self.data = nil
+    }
+    
     static func invalidToken() -> HttpResult<String> {
         return HttpResult<String>(errorCode: 10001, message: "Invalid Token");
     }

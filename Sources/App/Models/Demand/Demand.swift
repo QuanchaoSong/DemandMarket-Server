@@ -44,16 +44,25 @@ final class Demand: Model, Content {
     
     @Field(key: "create_time")
     var create_time: Date?
+    
+    
+    func importData(from params: DemandCreationRequest) -> Void {
+        self.title = title ?? ""
+        self.desc = params.desc ?? ""
+        self.expiring_time = params.expiring_time ?? Int64(Date().timeIntervalSince1970)
+        self.speciality = params.speciality ?? ""
+        self.type = params.type ?? 0
+    }
 }
 
 
 struct DemandCreationRequest : Content {
-    let title: String
-    let demander_name: String
-    let desc: String
-    let expiring_time: Int64
-    let speciality: String
-    let type: Int8
+    let title: String?
+//    let demander_name: String
+    let desc: String?
+    let expiring_time: Int64?
+    let speciality: String?
+    let type: Int8?
 }
 
 
