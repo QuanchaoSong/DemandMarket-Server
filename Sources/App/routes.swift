@@ -26,4 +26,8 @@ func routes(_ app: Application) throws {
     app.post(GlobalTool.routerName(group: "demand", name: "create_demand"), use: demandController.create_demand)
     app.post(GlobalTool.routerName(group: "demand", name: "get_demand_list"), use: demandController.get_demand_list)
     app.post(GlobalTool.routerName(group: "demand", name: "get_my_demand_list"), use: demandController.get_my_demand_list)
+    
+    
+    let companyController = CompanyController()
+    app.post(GlobalTool.routerName(group: "company", name: "get_company_speciality_list"), use: companyController.get_company_speciality_list)
 }

@@ -81,6 +81,29 @@ struct DemandCreationRequest : Content {
 }
 
 
+struct DemandListRequest : Content {
+    // 需求分类
+    let type_ids: String?
+    // 发布时间
+    let create_time_offset: Int64?
+    // 需求状态
+    let status: Int?
+    // 地区
+    let company_province: String?
+    
+    
+    
+    var pageIndex: Int?
+    var pageSize: Int?
+    
+    public lazy var rangeStart: Int! = {
+        return (self.pageIndex ?? 0) * (self.pageSize ?? 20);
+    }()
+    
+    public lazy var rangeEnd: Int! = {
+        return ((self.pageIndex ?? 0) + 1) * (self.pageSize ?? 20);
+    }()
+}
 
 
 struct TypeItem : Content {

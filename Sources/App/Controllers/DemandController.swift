@@ -28,7 +28,7 @@ struct DemandController {
     }
     
     func get_demand_list(req: Request) throws -> EventLoopFuture<HttpResult<[Demand.ListItem]>> {
-        var params = try req.content.decode(PageIndexRequest.self)
+        var params = try req.content.decode(DemandListRequest.self)
         let sqlString = String(format: "SELECT * FROM public.demands LIMIT %d OFFSET %d;", (params.rangeEnd - params.rangeStart), params.rangeStart)
         let sql = (req.db as! PostgresDatabase).sql()
         return sql.raw(SQLQueryString(stringLiteral: sqlString)).all().map { rows in
