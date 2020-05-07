@@ -107,7 +107,7 @@ struct LoginRequest : Content {
 }
 
 struct UserInfoRequest : Content {
-    let wx_open_id: String
+//    let wx_open_id: String
     let avatarUrl: String?
     let nickName: String?
     let gender: Int?
@@ -120,16 +120,16 @@ struct UserInfoRequest : Content {
 
 
 
-struct UserToken : Content, Authenticatable, JWTPayload {
+struct UserToken : JWTPayload  {
     var id: String! = ""
-    var create_time : Int! = Int(Date().timeIntervalSince1970);
-    var expired_duration: Int! = (5 * 24 * 60 * 60); // in second
-    
-    init(id: String?, create_time: Int?, expired_duration: Int?) {
-        self.id = id;
-        self.create_time = create_time;
-        self.expired_duration = expired_duration;
-    }
+//    var create_time : Int! = Int(Date().timeIntervalSince1970);
+//    var expired_duration: Int! = (5 * 24 * 60 * 60); // in second
+//    
+//    init(id: String?, create_time: Int?, expired_duration: Int?) {
+//        self.id = id;
+//        self.create_time = create_time;
+//        self.expired_duration = expired_duration;
+//    }
     
     init(id: String?) {
         self.id = id;

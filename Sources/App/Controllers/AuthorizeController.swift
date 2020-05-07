@@ -36,8 +36,9 @@ struct AuthorizeController {
                     user.id = UUID()
                 }
                 
-                let token = try? JWTSigner.hs256(key: .init(data: JWT_SIGN_SECRET.data(using: .utf8)!)).sign(UserToken(id: user.id!.uuidString))
-                user.token = token
+//                let token = try? JWTSigner.hs256(key: .init(data: JWT_SIGN_SECRET.data(using: .utf8)!)).sign(UserToken(id: user.id!.uuidString))
+                let token = try? req.jwt.sign(UserToken(id: user.id!.uuidString))
+                user.token = token ?? ""
                 
                 return user.save(on: req.db).map {
                     let rst = User.LoginResult(token: token ?? "")
@@ -48,8 +49,12 @@ struct AuthorizeController {
     }
     
     func update_userinfo(req: Request) throws -> EventLoopFuture<HttpResult<User.Public>> {
+        let jwt = try? req.jwt.verify(as: UserToken.self)
+        let uuid = UUID(uuidString: jwt?.id ?? "")
+        
         let params = try req.content.decode(UserInfoRequest.self);
-        return User.query(on: req.db).filter(\.$wx_open_id == params.wx_open_id).first().flatMap { u in
+        
+        return User.find(uuid, on: req.db).flatMap { u in
             guard let user = u else {
                 return req.eventLoop.future().map {
                     HttpResult(errorCode: 0, message: "用户错误")
