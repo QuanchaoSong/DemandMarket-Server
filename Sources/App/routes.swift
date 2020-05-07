@@ -30,4 +30,5 @@ func routes(_ app: Application) throws {
     
     let companyController = CompanyController()
     app.post(GlobalTool.routerName(group: "company", name: "get_company_speciality_list"), use: companyController.get_company_speciality_list)
+    app.post(GlobalTool.routerName(group: "company", name: "create_company"), use: companyController.create_company)
 }

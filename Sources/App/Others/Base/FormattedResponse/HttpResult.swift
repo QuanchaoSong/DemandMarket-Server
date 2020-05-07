@@ -13,6 +13,12 @@ struct HttpResult<T : Content> : Content {
     var data: T?
     var message: String
     
+    init() {
+        self.code = 1
+        self.message = "success"
+        self.data = nil
+    }
+    
     init(code: Int? = 1, data: T? = nil, message: String? = "success") {
         self.code = code!
         self.data = data
