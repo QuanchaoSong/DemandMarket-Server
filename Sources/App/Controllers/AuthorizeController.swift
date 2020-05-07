@@ -12,8 +12,26 @@ import JWT
 
 struct AuthorizeController {
     func login(req: Request) throws -> EventLoopFuture<HttpResult<User.LoginResult>> {
-        var loginParams = try req.content.decode(LoginRequest.self)
-        loginParams.code = "a5"
+        let loginParams = try req.content.decode(LoginRequest.self)
+//        loginParams.code = "a5"
+        
+        let mDict = ["appid": WX_APP_ID, "secret": WX_APP_SECRET, "js_code": loginParams.code, "grant_type": "authorization_code"]
+        print("mDict: \(mDict)")
+        let urlString = String(format: "https://api.weixin.qq.com/sns/jscode2session?grant_type=authorization_code&appid=%@&secret=%@&js_code=%@", WX_APP_ID, WX_APP_SECRET, loginParams.code)
+        print("urlString: \(urlString)")
+        
+        URLSession.shared.dataTask(with: URL(string: urlString)!) { (data, response, error) in
+            if error != nil {
+                print("\(String(describing: error))")
+                return
+            }
+            print("\(String(describing: response))")
+            let json = try! JSONSerialization.jsonObject(with: data ?? Data(), options: []) as? [String: Any]
+            print("json: \(String(describing: json))")
+            print(json?["openid"]! ?? "")
+            
+        }.resume()
+        
         return User.query(on: req.db).filter(\.$wx_open_id == loginParams.code).first().flatMap { u in
             
             let user: User = (u ?? User())

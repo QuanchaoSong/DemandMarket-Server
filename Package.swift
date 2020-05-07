@@ -11,8 +11,8 @@ let package = Package(
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0-rc"),
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0-rc"),
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.0.0-rc"),
-//        .package(url: "https://github.com/vapor/jwt-kit.git", from: "4.0.0-rc.1.4")
         .package(url: "https://github.com/vapor/jwt.git", from: "4.0.0-rc.2"),
+        .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.1.0")),
     ],
     targets: [
         .target(name: "App", dependencies: [
@@ -20,6 +20,7 @@ let package = Package(
             .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
             .product(name: "Vapor", package: "vapor"),
             .product(name: "JWT", package: "jwt"),
+            .product(name: "Alamofire", package: "Alamofire")
         ]),
         .target(name: "Run", dependencies: ["App"]),
         .testTarget(name: "AppTests", dependencies: [
