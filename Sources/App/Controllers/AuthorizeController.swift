@@ -13,29 +13,39 @@ import JWT
 struct AuthorizeController {
     func login(req: Request) throws -> EventLoopFuture<HttpResult<User.LoginResult>> {
         let loginParams = try req.content.decode(LoginRequest.self)
-//        loginParams.code = "a5"
         
-        let mDict = ["appid": WX_APP_ID, "secret": WX_APP_SECRET, "js_code": loginParams.code, "grant_type": "authorization_code"]
-        print("mDict: \(mDict)")
         let urlString = String(format: "https://api.weixin.qq.com/sns/jscode2session?grant_type=authorization_code&appid=%@&secret=%@&js_code=%@", WX_APP_ID, WX_APP_SECRET, loginParams.code)
-        print("urlString: \(urlString)")
         
-        URLSession.shared.dataTask(with: URL(string: urlString)!) { (data, response, error) in
-            if error != nil {
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        var wx_open_id: String = ""
+        let dataTask = URLSession.shared.dataTask(with: URL(string: urlString)!) { (data, response, error) -> Void in
+            if (error != nil) {
                 print("\(String(describing: error))")
                 return
             }
-            print("\(String(describing: response))")
-            let json = try! JSONSerialization.jsonObject(with: data ?? Data(), options: []) as? [String: Any]
-            print("json: \(String(describing: json))")
-            print(json?["openid"]! ?? "")
             
-        }.resume()
+            let json = try! JSONSerialization.jsonObject(with: data ?? Data(), options: []) as? [String: Any]
+            wx_open_id = (json?["openid"]! ?? "") as! String
+            
+            semaphore.signal()
+        }
+        dataTask.resume()
         
-        return User.query(on: req.db).filter(\.$wx_open_id == loginParams.code).first().flatMap { u in
+        semaphore.wait()
+        
+        print("wx_open_id: \(wx_open_id)")
+        
+        guard (wx_open_id.count > 0) else {
+            return req.eventLoop.future().map {
+                HttpResult<User.LoginResult>(errorWithMessage: "code无效")
+            }
+        }
+        
+        return User.query(on: req.db).filter(\.$wx_open_id == wx_open_id).first().flatMap { u in
             
             let user: User = (u ?? User())
-            user.wx_open_id = loginParams.code
+            user.wx_open_id = wx_open_id
             if (user.id == nil) {
                 user.id = UUID()
             }
@@ -44,8 +54,6 @@ struct AuthorizeController {
             user.token = token
             
             return user.save(on: req.db).map {
-//                let token = try? req.jwt.sign(UserToken(id: user.id!.uuidString))
-//                let token = try? JWTSigner.es256(key: .generate()).sign(UserToken(id: user.id!.uuidString))
                 let rst = User.LoginResult(token: token ?? "")
                 return HttpResult<User.LoginResult>(successWith: rst)
             }
