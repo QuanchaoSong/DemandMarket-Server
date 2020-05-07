@@ -16,46 +16,33 @@ struct AuthorizeController {
         
         let urlString = String(format: "https://api.weixin.qq.com/sns/jscode2session?grant_type=authorization_code&appid=%@&secret=%@&js_code=%@", WX_APP_ID, WX_APP_SECRET, loginParams.code)
         
-        let semaphore = DispatchSemaphore(value: 0)
-        
-        var wx_open_id: String = ""
-        let dataTask = URLSession.shared.dataTask(with: URL(string: urlString)!) { (data, response, error) -> Void in
-            if (error != nil) {
-                print("\(String(describing: error))")
-                return
+        return req.client.get(URI(string: urlString)).flatMap { response in
+            var responseBody = response.body
+            let jsonData = responseBody!.readData(length: responseBody!.readableBytes)
+            let json = try! JSONSerialization.jsonObject(with: jsonData ?? Data(), options: []) as? [String: Any]
+            let wx_open_id = (json?["openid"]! ?? "") as! String
+            
+            guard (wx_open_id.count > 0) else {
+                return req.eventLoop.future().map {
+                    HttpResult<User.LoginResult>(errorWithMessage: "code无效")
+                }
             }
             
-            let json = try! JSONSerialization.jsonObject(with: data ?? Data(), options: []) as? [String: Any]
-            wx_open_id = (json?["openid"]! ?? "") as! String
-            
-            semaphore.signal()
-        }
-        dataTask.resume()
-        
-        semaphore.wait()
-        
-        print("wx_open_id: \(wx_open_id)")
-        
-        guard (wx_open_id.count > 0) else {
-            return req.eventLoop.future().map {
-                HttpResult<User.LoginResult>(errorWithMessage: "code无效")
-            }
-        }
-        
-        return User.query(on: req.db).filter(\.$wx_open_id == wx_open_id).first().flatMap { u in
-            
-            let user: User = (u ?? User())
-            user.wx_open_id = wx_open_id
-            if (user.id == nil) {
-                user.id = UUID()
-            }
-            
-            let token = try? JWTSigner.hs256(key: .init(data: JWT_SIGN_SECRET.data(using: .utf8)!)).sign(UserToken(id: user.id!.uuidString))
-            user.token = token
-            
-            return user.save(on: req.db).map {
-                let rst = User.LoginResult(token: token ?? "")
-                return HttpResult<User.LoginResult>(successWith: rst)
+            return User.query(on: req.db).filter(\.$wx_open_id == wx_open_id).first().flatMap { u in
+                
+                let user: User = (u ?? User())
+                user.wx_open_id = wx_open_id
+                if (user.id == nil) {
+                    user.id = UUID()
+                }
+                
+                let token = try? JWTSigner.hs256(key: .init(data: JWT_SIGN_SECRET.data(using: .utf8)!)).sign(UserToken(id: user.id!.uuidString))
+                user.token = token
+                
+                return user.save(on: req.db).map {
+                    let rst = User.LoginResult(token: token ?? "")
+                    return HttpResult<User.LoginResult>(successWith: rst)
+                }
             }
         }
     }
