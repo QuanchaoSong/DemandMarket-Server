@@ -11,7 +11,7 @@ import PostgresKit
 
 struct DemandController {
     func create_demand(req: Request) throws -> EventLoopFuture<HttpResult<Demand>> {
-        let uuid = UUID(uuidString: "634d4cbf-b451-4eff-a8dd-c9b9becb3c23")
+        let uuid = UUID(uuidString: "b970dc2c-3c1d-4510-ab9d-d47e38877c65")
         let params = try req.content.decode(DemandCreationRequest.self)
         return User.find(uuid!, on: req.db).flatMap { user in
             let dmd = Demand()
@@ -37,7 +37,7 @@ struct DemandController {
                 
                 let demand = try! sqlRow.decode(model: Demand.self)
                 
-                return Demand.ListItem(title: demand.title, demander_name: demand.demander_name, type_id: demand.type, type_name: getTypeNameBy(typeId: demand.type!), status: demand.status, expiring_time: demand.expiring_time)
+                return Demand.ListItem(title: demand.title, demander_name: demand.demander_name, type_id: demand.type, type_name: getTypeNameBy(typeId: demand.type!), status: demand.status, status_name: self.getStatusNameBy(status: demand.status), expiring_time: demand.expiring_time, expiring_time_string: GlobalTool.formattedDate(by: demand.expiring_time))
             }
             
             return HttpResult<[Demand.ListItem]>(successWith: result)
@@ -56,7 +56,7 @@ struct DemandController {
                 
                 let demand = try! sqlRow.decode(model: Demand.self)
                 
-                return Demand.ListItem(title: demand.title, demander_name: demand.demander_name, type_id: demand.type, type_name: getTypeNameBy(typeId: demand.type!), status: demand.status, expiring_time: demand.expiring_time)
+                return Demand.ListItem(title: demand.title, demander_name: demand.demander_name, type_id: demand.type, type_name: getTypeNameBy(typeId: demand.type!), status: demand.status, status_name: self.getStatusNameBy(status: demand.status), expiring_time: demand.expiring_time, expiring_time_string: GlobalTool.formattedDate(by: demand.expiring_time))
             }
             
             return HttpResult<[Demand.ListItem]>(successWith: result)
@@ -68,5 +68,19 @@ struct DemandController {
         return req.eventLoop.future().map { _ in
             HttpResult<[[String : String]]>(successWith: DEMAND_TYPE_LIST)
         }
+    }
+    
+    
+    private func getStatusNameBy(status: Int? = 0) -> String {
+        var result : String = ""
+        if (status == 0) {
+            result = "审核中"
+        } else if (status == 1) {
+            result = "审核通过"
+        } else if (status == 2) {
+            result = "被拒绝"
+        }
+        
+        return result
     }
 }

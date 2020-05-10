@@ -10,6 +10,13 @@ import Vapor
 import JWT
 
 class GlobalTool: NSObject {
+    static func formattedDate(by timestamp: Int64?, formatString: String? = "yyyy-MM-dd") -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval(integerLiteral: timestamp ?? 0))
+        let dateFmt = DateFormatter()
+        dateFmt.dateFormat = formatString ?? "yyyy-MM-dd"
+        return dateFmt.string(from: date)
+    }
+    
     static func routerName(version: String, group: String, name: String) -> [PathComponent] {
         let result = "\(version)/\(group)/\(name)"
         return result.pathComponents

@@ -66,7 +66,9 @@ extension Demand {
         let type_id: Int?
         let type_name: String?
         let status: Int?
+        let status_name: String?
         let expiring_time: Int64?
+        let expiring_time_string: String?
         let view_count: Int? = 0
     }
 }
@@ -88,8 +90,9 @@ struct DemandListRequest : Content {
     let create_time_offset: Int64?
     // 需求状态
     let status: Int?
-    // 地区
-    let company_province: String?
+    // 省市
+    let province: String?
+    let city: String?
     
     
     
