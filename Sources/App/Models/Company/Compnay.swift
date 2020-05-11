@@ -75,6 +75,9 @@ final class Company: Model, Content {
     @Field(key: "create_time")
     var create_time: Date?
     
+    @Field(key: "creator_id")
+    var creator_id: String?
+    
     
     func importData(from params: CompanyCreationRequest) -> Void {
         self.name = params.name

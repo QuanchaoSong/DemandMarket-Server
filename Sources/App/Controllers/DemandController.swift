@@ -27,6 +27,18 @@ struct DemandController {
         }
     }
     
+    func get_demand_detail(req: Request) throws -> EventLoopFuture<HttpResult<Demand.Detail>> {
+        let params = try req.content.decode(DemandDetailRequest.self)
+        return Demand.find(params.the_id, on: req.db).map({ d in
+            guard let dmd = d else {
+                return HttpResult<Demand.Detail>(errorWithMessage: "无数据")
+            }
+            
+            let detail = Demand.Detail(publish_time_string: GlobalTool.formattedDate(by: Int64(dmd.create_time!.timeIntervalSince1970)), expiring_time_string: GlobalTool.formattedDate(by: dmd.expiring_time), demander_name: dmd.demander_name, status: dmd.status, status_name: "对接中", specialities: "汽车、奢侈品", content: dmd.content)
+            return HttpResult<Demand.Detail>(successWith: detail)
+        })
+    }
+    
     func get_demand_list(req: Request) throws -> EventLoopFuture<HttpResult<[Demand.ListItem]>> {
         var params = try req.content.decode(DemandListRequest.self)
         let sqlString = String(format: "SELECT * FROM public.demands LIMIT %d OFFSET %d;", (params.rangeEnd - params.rangeStart), params.rangeStart)
@@ -37,7 +49,7 @@ struct DemandController {
                 
                 let demand = try! sqlRow.decode(model: Demand.self)
                 
-                return Demand.ListItem(title: demand.title, demander_name: demand.demander_name, type_id: demand.type, type_name: getTypeNameBy(typeId: demand.type!), status: demand.status, status_name: self.getStatusNameBy(status: demand.status), expiring_time: demand.expiring_time, expiring_time_string: GlobalTool.formattedDate(by: demand.expiring_time))
+                return Demand.ListItem(the_id: demand.id, title: demand.title, demander_name: demand.demander_name, type_id: demand.type, type_name: getTypeNameBy(typeId: demand.type!), status: demand.status, status_name: self.getStatusNameBy(status: demand.status), expiring_time: demand.expiring_time, expiring_time_string: GlobalTool.formattedDate(by: demand.expiring_time))
             }
             
             return HttpResult<[Demand.ListItem]>(successWith: result)
@@ -56,7 +68,7 @@ struct DemandController {
                 
                 let demand = try! sqlRow.decode(model: Demand.self)
                 
-                return Demand.ListItem(title: demand.title, demander_name: demand.demander_name, type_id: demand.type, type_name: getTypeNameBy(typeId: demand.type!), status: demand.status, status_name: self.getStatusNameBy(status: demand.status), expiring_time: demand.expiring_time, expiring_time_string: GlobalTool.formattedDate(by: demand.expiring_time))
+                return Demand.ListItem(the_id: demand.id, title: demand.title, demander_name: demand.demander_name, type_id: demand.type, type_name: getTypeNameBy(typeId: demand.type!), status: demand.status, status_name: self.getStatusNameBy(status: demand.status), expiring_time: demand.expiring_time, expiring_time_string: GlobalTool.formattedDate(by: demand.expiring_time))
             }
             
             return HttpResult<[Demand.ListItem]>(successWith: result)

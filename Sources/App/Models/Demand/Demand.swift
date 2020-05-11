@@ -24,8 +24,8 @@ final class Demand: Model, Content {
     @Field(key: "demander_name")
     var demander_name: String?
     
-    @Field(key: "desc")
-    var desc: String?
+    @Field(key: "content")
+    var content: String?
     
     @Field(key: "expiring_time")
     var expiring_time: Int64?
@@ -52,7 +52,7 @@ final class Demand: Model, Content {
     
     func importData(from params: DemandCreationRequest) -> Void {
         self.title = params.title ?? ""
-        self.desc = params.desc ?? ""
+        self.content = params.content ?? ""
         self.expiring_time = params.expiring_time ?? Int64(Date().timeIntervalSince1970)
         self.speciality = params.speciality ?? ""
         self.type = params.type ?? 0
@@ -61,6 +61,7 @@ final class Demand: Model, Content {
 
 extension Demand {
     struct ListItem : Content {
+        let the_id: Int?
         let title: String?
         let demander_name: String?
         let type_id: Int?
@@ -71,12 +72,26 @@ extension Demand {
         let expiring_time_string: String?
         let view_count: Int? = 0
     }
+    
+    struct Detail : Content {
+        let publish_time_string: String?
+        let expiring_time_string: String?
+        let demander_name: String?
+        let status: Int?
+        let status_name: String?
+        let specialities: String?
+        let content: String?
+    }
 }
 
 
+struct DemandDetailRequest : Content {
+    let the_id: Int?
+}
+
 struct DemandCreationRequest : Content {
     let title: String?
-    let desc: String?
+    let content: String?
     let expiring_time: Int64?
     let speciality: String?
     let type: Int?
